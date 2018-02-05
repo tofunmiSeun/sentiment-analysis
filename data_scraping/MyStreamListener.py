@@ -2,7 +2,6 @@ import tweepy
 from database.tweetsDB import TweetsDB
 
 
-# override tweepy.StreamListener to add logic to on_status
 class MyStreamListener(tweepy.StreamListener):
     def on_status(self, tweet):
         print(tweet.text + "\n")

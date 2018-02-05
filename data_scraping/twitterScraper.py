@@ -8,7 +8,7 @@ class TwitterScraper:
     CORRUPTION_KEYWORDS_FILE_NAME = "data_scraping/corruptionKeyWords"
 
     CREDENTIALS_KEYS = ["CONSUMER_KEY", "CONSUMER_SECRET", "ACCESS_TOKEN_KEY", "ACCESS_TOKEN_SECRET"]
-    NIGERIA_GEOCODE_INFROMATION = "9.054362,7.426758,961.12km"
+    NIGERIA_GEOCODE_INFROMATION = [-122.75, 36.8, -121.75, 37.8]
 
     @staticmethod
     def get_twitter_api():
@@ -32,26 +32,25 @@ class TwitterScraper:
 
     @staticmethod
     def get_corruption_keywords_query_filter():
-        query = ""
+        query = []
         text = open(TwitterScraper.CORRUPTION_KEYWORDS_FILE_NAME, "r").read()
         lines = text.split()
 
         if len(lines) == 0:
             return query
 
-        query += lines[0]
-        for i in range(1, len(lines)):
-            query += " OR " + lines[i]
+        for i in range(0, len(lines)):
+            query.append(lines[i])
 
         return query
 
     @staticmethod
     def scrape_data():
         api = TwitterScraper.get_twitter_api()
-        corruption_keywords_query = TwitterScraper.get_corruption_keywords_query_filter()
-        #result = api.search(corruption_keywords_query, geocode=TwitterScraper.NIGERIA_GEOCODE_INFROMATION)
+        corruption_keywords = TwitterScraper.get_corruption_keywords_query_filter()
+        # result = api.search(corruption_keywords_query, geocode=TwitterScraper.NIGERIA_GEOCODE_INFROMATION)
 
-        #for item in result:
+        # for item in result:
         #    print(item.text + "\n")
 
         #   if item.text.startswith("RT @"):
@@ -65,4 +64,4 @@ class TwitterScraper:
         myStreamListener = MyStreamListener()
         myStream = tweepy.Stream(auth=api.auth, listener=myStreamListener)
 
-        myStream.filter(track=[corruption_keywords_query])
+        myStream.filter(track=corruption_keywords, locations=TwitterScraper.NIGERIA_GEOCODE_INFROMATION)

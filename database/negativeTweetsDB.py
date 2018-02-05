@@ -2,14 +2,14 @@ from pymongo import MongoClient
 from Constants import Constant
 
 
-class TweetsDB:
-    COLLECTION_NAME = "relevantTweets"
+class NegativeTweetsDB:
+    COLLECTION_NAME = "negativeTweets"
 
     @staticmethod
     def get_all_tweets():
         try:
             client = MongoClient(Constant.DB_CONNECTION_URL)
-            document = client[Constant.DB_NAME][TweetsDB.COLLECTION_NAME]
+            document = client[Constant.DB_NAME][NegativeTweetsDB.COLLECTION_NAME]
 
             all_tweets = []
 
@@ -36,14 +36,14 @@ class TweetsDB:
     def save_tweet(new_tweet):
         try:
             client = MongoClient(Constant.DB_CONNECTION_URL)
-            document = client[Constant.DB_NAME][TweetsDB.COLLECTION_NAME]
+            document = client[Constant.DB_NAME][NegativeTweetsDB.COLLECTION_NAME]
 
-            if document.find_one({"tweet_id": new_tweet.id_str}) is not None:
+            if document.find_one({"tweet_id": new_tweet["tweet_id"]}) is not None:
                 raise Exception(Constant.TWEET_ALREADY_EXISTS_EXCEPTION_MESSAGE)
 
             obj = {
-                "tweet_id": new_tweet.id_str,
-                "tweet": new_tweet.text
+                "tweet_id": new_tweet["tweet_id"],
+                "tweet": new_tweet["text"]
             }
 
             document.insert(obj)
@@ -61,7 +61,7 @@ class TweetsDB:
     def delete_tweet(tweet_id):
         try:
             client = MongoClient(Constant.DB_CONNECTION_URL)
-            document = client[Constant.DB_NAME][TweetsDB.COLLECTION_NAME]
+            document = client[Constant.DB_NAME][NegativeTweetsDB.COLLECTION_NAME]
 
             document.delete_one({"tweet_id": tweet_id})
             client.close()
